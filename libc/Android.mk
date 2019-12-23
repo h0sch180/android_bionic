@@ -640,6 +640,10 @@ ifeq ($(strip $(DEBUG_BIONIC_LIBC)),true)
   libc_common_cflags += -DDEBUG
 endif
 
+ifeq ($(strip $(BOARD_USES_LIBC_WRAPPER)),true)
+  libc_common_cflags += -DUSE_WRAPPER
+endif
+
 libc_malloc_src := bionic/jemalloc_wrapper.cpp
 libc_common_c_includes += external/jemalloc/include
 
@@ -1043,7 +1047,7 @@ include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES := $(libc_bionic_ndk_src_files)
 LOCAL_CFLAGS := $(libc_common_cflags) \
-    -Wframe-larger-than=2048 \
+    -Wframe-larger-than=2048
 
 LOCAL_CONLYFLAGS := $(libc_common_conlyflags)
 LOCAL_CPPFLAGS := $(libc_common_cppflags) -Wold-style-cast
@@ -1234,6 +1238,7 @@ include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES := $(libc_common_src_files)
 LOCAL_CFLAGS := $(libc_common_cflags)
+
 LOCAL_CONLYFLAGS := $(libc_common_conlyflags)
 LOCAL_CPPFLAGS := $(libc_common_cppflags)
 LOCAL_C_INCLUDES := $(libc_common_c_includes)
@@ -1394,6 +1399,10 @@ LOCAL_ADDITIONAL_DEPENDENCIES := \
     $(LOCAL_PATH)/libc.mips.brillo.map \
     $(LOCAL_PATH)/libc.x86.brillo.map \
 
+# Leave the symbols in the shared library so that stack unwinders can produce
+# meaningful name resolution.
+LOCAL_STRIP_MODULE := keep_symbols
+
 # Do not pack libc.so relocations; see http://b/20645321 for details.
 LOCAL_PACK_MODULE_RELOCATIONS := false
 
@@ -1452,6 +1461,9 @@ LOCAL_SRC_FILES_arm += \
 
 LOCAL_SANITIZE := never
 LOCAL_NATIVE_COVERAGE := $(bionic_coverage)
+
+# Allow devices to provide additional symbols
+LOCAL_WHOLE_STATIC_LIBRARIES += $(BOARD_PROVIDES_ADDITIONAL_BIONIC_STATIC_LIBS)
 
 include $(BUILD_SHARED_LIBRARY)
 

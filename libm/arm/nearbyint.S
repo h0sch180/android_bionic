@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
+#include <float.h>
 #include <private/bionic_asm.h>
 
-ENTRY(fmax)
-  fmaxnm d0, d0, d1
-  ret
-END(fmax)
+ENTRY(nearbyint)
+    vmov        d0, r0, r1
+    vrintr.f64  d0, d0
+    vmov        r0, r1, d0
+    bx          lr
+END(nearbyint)
 
-ENTRY(fmaxf)
-  fmaxnm s0, s0, s1
-  ret
-END(fmaxf)
+ENTRY(nearbyintf)
+    vmov        s0, r0
+    vrintr.f32  s0, s0
+    vmov        r0, s0
+    bx          lr
+END(nearbyintf)
+
+ALIAS_SYMBOL(nearbyintl, nearbyint);

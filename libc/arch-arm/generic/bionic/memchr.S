@@ -80,11 +80,10 @@ ENTRY(memchr)
 	/* Use a simple loop if there are less than 8 bytes to search.  */
 	cmp	cntin, #7
 	bhi	.Llargestr
-	and	chrin, chrin, #0xff
 
 .Lsmallstr:
 	subs	cntin, cntin, #1
-	blo	.Lnotfound	/* Return not found if reached end.  */
+	blt	.Lnotfound	/* Return not found if reached end.  */
 	ldrb	tmp, [srcin], #1
 	cmp	tmp, chrin
 	bne	.Lsmallstr	/* Loop again if not found.  */

@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
+#include <float.h>
 #include <private/bionic_asm.h>
 
-ENTRY(fmax)
-  fmaxnm d0, d0, d1
-  ret
-END(fmax)
+ENTRY(fmin)
+    vmov        d0, r0, r1
+    vmov        d1, r2, r3
+    vminnm.f64  d0, d0, d1
+    vmov        r0, r1, d0
+    bx          lr
+END(fmin)
 
-ENTRY(fmaxf)
-  fmaxnm s0, s0, s1
-  ret
-END(fmaxf)
+ENTRY(fminf)
+    vmov        s0, r0
+    vmov        s2, r1
+    vminnm.f32  s0, s0, s2
+    vmov        r0, s0
+    bx          lr
+END(fminf)
